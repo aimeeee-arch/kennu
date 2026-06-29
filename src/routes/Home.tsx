@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
-import { islands, allOrbs, orbContext, findIsland } from '../content';
-import { load } from '../engines/storage';
+import { islands, allOrbs, orbContext, findIsland, orbOfDay } from '../content';
+import { load, todayISO } from '../engines/storage';
 import { isDue } from '../engines/sm2';
 import KnowledgeMap from '../components/KnowledgeMap';
 import StampGrid from '../components/StampGrid';
+import Avatar from '../components/Avatar';
 
 export default function Home() {
   const state = load();
@@ -11,42 +12,56 @@ export default function Home() {
   const completedCount = state.completed.length;
   const total = orbs.length;
 
-  // eerstvolgende orb: na de laatst gedane, anders de eerste ongedane
+  // Orb van de dag — stabiel per dag
+  const daily = orbOfDay(todayISO());
+  const dailyCtx = orbContext(daily.id);
+  const dailyDone = state.completed.includes(daily.id);
+
+  // Ga verder: eerstvolgende ongedane orb
   const firstUndone = orbs.find(o => !state.completed.includes(o.id));
-  const next = firstUndone ?? orbs[0];
-  const nextCtx = next ? orbContext(next.id) : undefined;
 
   const dueCount = orbs.filter(o => state.completed.includes(o.id) && isDue(state.cards[o.id])).length;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Jouw leer-eilanden</h1>
-        <p className="text-sm opacity-70 mt-1">
-          Korte sessies, vaste kennis. Kies een eiland of ga verder waar je was.
-        </p>
-      </div>
+      <Avatar count={completedCount} />
 
-      {next && nextCtx && (
+      {/* Orb van de dag */}
+      {dailyCtx && (
         <Link
-          to={`/leer/${next.id}`}
+          to={`/leer/${daily.id}`}
           className="block rounded-2xl p-5 text-zinc-950 shadow-sm transition hover:brightness-105"
-          style={{ background: `linear-gradient(135deg, ${nextCtx.island.color}, #fbbf24)` }}
+          style={{ background: `linear-gradient(135deg, ${dailyCtx.island.color}, #fbbf24)` }}
         >
           <div className="text-xs uppercase tracking-wide opacity-70">
-            {completedCount > 0 ? 'Ga verder' : 'Begin hier'}
+            Orb van de dag{dailyDone ? ' · al gedaan ✓' : ''}
           </div>
           <div className="text-lg font-semibold mt-1 flex items-center gap-2">
-            <span>{nextCtx.island.icon}</span>
-            <span>{next.title}</span>
+            <span>{dailyCtx.island.icon}</span>
+            <span>{daily.title}</span>
           </div>
-          <div className="text-sm opacity-80 mt-0.5">{nextCtx.island.title} · {nextCtx.topic.title}</div>
+          <div className="text-sm opacity-80 mt-0.5">
+            {dailyCtx.island.title} · {dailyCtx.topic.title}
+          </div>
+          <p className="text-sm italic mt-2 opacity-90">“{daily.priming}”</p>
           <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium bg-black/15 rounded-lg px-3 py-1.5">
-            Start sessie →
+            {dailyDone ? 'Nog eens doen' : 'Start sessie'} →
           </span>
         </Link>
       )}
 
+      {/* Ga verder (secundair) */}
+      {firstUndone && firstUndone.id !== daily.id && (
+        <Link
+          to={`/leer/${firstUndone.id}`}
+          className="flex items-center justify-between text-sm px-1 opacity-75 hover:opacity-100 transition"
+        >
+          <span>↪ Ga verder: {firstUndone.title}</span>
+          <span className="opacity-60">›</span>
+        </Link>
+      )}
+
+      {/* Eilanden */}
       <section>
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide opacity-70">Eilanden</h2>

@@ -36,3 +36,16 @@ html, body {
     radial-gradient(120% 80% at 50% -10%, rgba(249, 115, 22, 0.10), transparent 60%),
     radial-gradient(80% 60% at 80% 110%, rgba(56, 189, 248, 0.08), transparent 60%);
 }
+
+/* ── Avatar-animaties ── */
+@keyframes kennu-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes kennu-spin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes kennu-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+
+.kennu-float { animation: kennu-float 4s ease-in-out infinite; }
+.kennu-pulse { animation: kennu-pulse 3.5s ease-in-out infinite; }
+.kennu-spin  { animation: kennu-spin 22s linear infinite; transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kennu-float, .kennu-pulse, .kennu-spin { animation: none; }
+}

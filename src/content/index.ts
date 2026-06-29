@@ -35,6 +35,14 @@ export function findOrb(orbId: string): Orb | undefined {
   return allOrbs().find(o => o.id === orbId);
 }
 
+// Stabiele "orb van de dag": zelfde orb gedurende de hele dag (seed = datum).
+export function orbOfDay(seed: string): Orb {
+  const orbs = allOrbs();
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return orbs[h % orbs.length];
+}
+
 // Geef de context van een orb terug: in welk eiland/topic zit hij, en de volgorde.
 export function orbContext(orbId: string):
   | { island: Island; topic: Topic; orb: Orb; flatIndex: number; flatOrbs: Orb[] }
