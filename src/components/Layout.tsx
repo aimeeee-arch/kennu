@@ -31,6 +31,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             {tab('/', 'Kaart')}
+            {tab('/uitrusting', '⚔️', 'Held & uitrusting')}
             {tab('/review', 'Review')}
             {tab('/bank', 'Bank')}
             {tab('/settings', '⚙', 'Instellingen')}

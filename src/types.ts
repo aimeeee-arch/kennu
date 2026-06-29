@@ -87,4 +87,5 @@ export type StorageV1 = {
   stamps: string[]; // YYYY-MM-DD met ≥1 sessie — nooit reset
   certificates: string[]; // islandIds 100% afgerond
   lastOrb?: string; // voor "ga verder" op Home
+  equipped?: Record<string, string>; // slot → itemId (uitrusting van je held)
 };

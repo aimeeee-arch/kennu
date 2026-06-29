@@ -8,6 +8,7 @@ const empty = (): StorageV1 => ({
   completed: [],
   stamps: [],
   certificates: [],
+  equipped: {},
 });
 
 export function load(): StorageV1 {
@@ -86,6 +87,14 @@ export function markCompleted(orbId: string) {
     s.lastOrb = orbId;
     const today = todayISO();
     if (!s.stamps.includes(today)) s.stamps.push(today);
+  });
+}
+
+export function setEquip(slot: string, itemId: string | null) {
+  return update(s => {
+    s.equipped ??= {};
+    if (itemId === null) delete s.equipped[slot];
+    else s.equipped[slot] = itemId;
   });
 }
 

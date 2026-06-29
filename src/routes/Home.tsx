@@ -4,7 +4,8 @@ import { load, todayISO } from '../engines/storage';
 import { isDue } from '../engines/sm2';
 import KnowledgeMap from '../components/KnowledgeMap';
 import StampGrid from '../components/StampGrid';
-import Avatar from '../components/Avatar';
+import HeroStage from '../components/HeroStage';
+import { ITEMS, isUnlocked } from '../game/items';
 
 export default function Home() {
   const state = load();
@@ -21,10 +22,25 @@ export default function Home() {
   const firstUndone = orbs.find(o => !state.completed.includes(o.id));
 
   const dueCount = orbs.filter(o => state.completed.includes(o.id) && isDue(state.cards[o.id])).length;
+  const unlockedItems = ITEMS.filter(i => isUnlocked(i, state)).length;
 
   return (
     <div className="space-y-6">
-      <Avatar count={completedCount} />
+      <Link
+        to="/uitrusting"
+        className="flex items-center gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-3 pr-4 hover:border-zinc-600 transition"
+      >
+        <div className="sea-bg rounded-xl">
+          <HeroStage equipped={state.equipped ?? {}} size={72} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-bold">Jouw held</div>
+          <div className="text-xs opacity-70 mt-0.5">
+            {completedCount} orb{completedCount === 1 ? '' : 's'} · {unlockedItems}/{ITEMS.length} items ontgrendeld
+          </div>
+          <div className="text-sm font-medium text-glow-400 mt-1">Uitrusting aanpassen →</div>
+        </div>
+      </Link>
 
       {/* Orb van de dag */}
       {dailyCtx && (
